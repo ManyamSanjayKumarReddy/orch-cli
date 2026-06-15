@@ -1,0 +1,26 @@
+{
+  "name": "orch-cli",
+  "version": "1.0.0",
+  "description": "CLI tool for BYO-K8s container orchestration platform",
+  "main": "index.js",
+  "type": "module",
+  "bin": {
+    "orch": "./bin/orch.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "kubernetes",
+    "orchestration",
+    "cli",
+    "devops",
+    "containers",
+    "docker"
+  ],
+  "author": "ManyamSanjayKumarReddy",
+  "license": "ISC",
+  "dependencies": {
+    "js-yaml": "^4.2.0"
+  }
+}

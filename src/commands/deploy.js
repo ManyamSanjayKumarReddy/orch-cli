@@ -5,6 +5,7 @@ import {
   createPipeline,
   createService,
   createIngress,
+  triggerPipelineRun,
 } from "../api.js";
 
 export async function deployCommand(filePath) {
@@ -79,7 +80,16 @@ export async function deployCommand(filePath) {
     }
   }
 
+  // step 7 — trigger first pipeline run automatically
+  console.log(`Triggering first pipeline run...`);
+  const runResult = await triggerPipelineRun(
+    config.controlPlaneUrl,
+    config.apiKey,
+    pipelineResult.id,
+  );
+  console.log(`Pipeline run started — id: ${runResult.id}`);
+
   console.log(
-    `\nDone. Push to '${pipeline.branch}' to trigger your first build.`,
+    `\nDone. Your first build is running. Push to '${pipeline.branch}' for future deployments.`,
   );
 }

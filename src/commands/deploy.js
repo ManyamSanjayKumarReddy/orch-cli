@@ -1,6 +1,11 @@
 import { loadConfig } from "../config.js";
 import { parseOrchFile } from "../parser.js";
-import { createPipelineDeployment, createPipeline } from "../api.js";
+import {
+  createPipelineDeployment,
+  createPipeline,
+  createService,
+  createIngress,
+} from "../api.js";
 
 export async function deployCommand(filePath) {
   // step 1 — load control plane config
@@ -13,7 +18,8 @@ export async function deployCommand(filePath) {
 
   // step 2 — parse orch.yaml
   console.log(`Parsing ${filePath}...`);
-  const { deployment, pipeline, namespace } = parseOrchFile(filePath);
+  const { deployment, pipeline, service, ingress, namespace } =
+    parseOrchFile(filePath);
 
   // step 3 — create the deployment
   console.log(`Creating deployment '${deployment.name}'...`);
@@ -24,7 +30,6 @@ export async function deployCommand(filePath) {
   );
 
   const deploymentId = deploymentResult.id;
-
   console.log(`Deployment created — id: ${deploymentId}`);
 
   // step 4 — attach the pipeline
@@ -37,6 +42,43 @@ export async function deployCommand(filePath) {
   );
 
   console.log(`Pipeline created — id: ${pipelineResult.id}`);
+
+  // step 5 — create service (optional)
+  if (service) {
+    console.log(`Creating service '${service.name}'...`);
+    const serviceResult = await createService(
+      config.controlPlaneUrl,
+      config.apiKey,
+      {
+        name: service.name,
+        labelSelector: deployment.labels,
+        targetPort: deployment.containerPort,
+      },
+    );
+    console.log(`Service created — id: ${serviceResult.id}`);
+
+    // step 6 — create ingress (optional, only if service exists)
+    if (ingress) {
+      console.log(`Creating ingress '${ingress.name}'...`);
+      const ingressResult = await createIngress(
+        config.controlPlaneUrl,
+        config.apiKey,
+        {
+          name: ingress.name,
+          rules: [
+            {
+              path: ingress.path,
+              serviceName: service.name,
+              host: ingress.host ?? undefined,
+              tls: ingress.tls ?? false,
+            },
+          ],
+        },
+      );
+      console.log(`Ingress created — id: ${ingressResult.id}`);
+    }
+  }
+
   console.log(
     `\nDone. Push to '${pipeline.branch}' to trigger your first build.`,
   );

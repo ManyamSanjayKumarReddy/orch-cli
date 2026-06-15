@@ -1,40 +1,85 @@
-export async function createPipelineDeployment(controlPlaneUrl, apiKey, deploymentData) {
+export async function createPipelineDeployment(
+  controlPlaneUrl,
+  apiKey,
+  deploymentData,
+) {
   const res = await fetch(`${controlPlaneUrl}/deployment/pipeline`, {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'Authorization': `Bearer ${apiKey}`,
-      'Content-Type': 'application/json'
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
     },
-    body: JSON.stringify(deploymentData)
-  })
+    body: JSON.stringify(deploymentData),
+  });
 
-  const data = await res.json()
+  const data = await res.json();
 
   if (!res.ok) {
-    throw new Error(`Failed to create deployment: ${data.message}`)
+    throw new Error(`Failed to create deployment: ${data.message}`);
   }
 
-  return data
+  return data;
 }
 
-export async function createPipeline(controlPlaneUrl, apiKey, deploymentId, pipelineData) {
+export async function createPipeline(
+  controlPlaneUrl,
+  apiKey,
+  deploymentId,
+  pipelineData,
+) {
   const res = await fetch(`${controlPlaneUrl}/pipeline`, {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'Authorization': `Bearer ${apiKey}`,
-      'Content-Type': 'application/json'
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
     },
     body: JSON.stringify({
       deploymentId,
-      ...pipelineData
-    })
-  })
+      ...pipelineData,
+    }),
+  });
 
-  const data = await res.json()
+  const data = await res.json();
 
   if (!res.ok) {
-    throw new Error(`Failed to create pipeline: ${data.message}`)
+    throw new Error(`Failed to create pipeline: ${data.message}`);
   }
 
-  return data
+  return data;
+}
+
+export async function createService(controlPlaneUrl, apiKey, serviceData) {
+  const res = await fetch(`${controlPlaneUrl}/service`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(serviceData),
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(`Failed to create service : ${data.message}`);
+  }
+}
+
+export async function createIngress(controlPlaneUrl, apiKey, ingressData) {
+  const res = await fetch(`${controlPlaneUrl}/ingress`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(ingressData),
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(`Failed to create ingress: ${data.message}`);
+  }
+
+  return data;
 }
